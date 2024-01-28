@@ -1,6 +1,7 @@
 package com.teste.ecmproject.service.impl;
 
 import com.teste.ecmproject.api.dto.MovieDto;
+import com.teste.ecmproject.api.exception.BusinessException;
 import com.teste.ecmproject.model.entity.MovieEntity;
 import com.teste.ecmproject.model.repository.MovieRepository;
 import com.teste.ecmproject.service.MovieService;
@@ -26,16 +27,18 @@ public class MovieServiceImpl implements MovieService {
 
 
     @Override
-    public void createMovie(MovieDto movieDto) {
+    public void createMovie(MovieDto dto) throws BusinessException {
+        validateMovieCode(dto.getCode());
         MovieEntity movieEntity = new MovieEntity();
-        movieEntity.setEntity(movieDto);
+        movieEntity.setEntity(dto);
         movieRepository.save(movieEntity);
 
     }
 
     @Override
     @Transactional
-    public void update(MovieDto dto) {
+    public void update(MovieDto dto) throws BusinessException {
+        validateMovieCode(dto.getCode());
         movieRepository.updateMovie(
                 dto.getCode(),
                 dto.getName(),
@@ -48,9 +51,9 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public void delete(UUID id) {
+    public void delete(UUID id) throws BusinessException {
         if (id == null){
-            throw new IllegalArgumentException("The movie id cannot be null");
+            throw new BusinessException("The movie id cannot be null.");
         }
         this.movieRepository.deleteById(id);
 
@@ -75,5 +78,15 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public List<MovieEntity> findAllUnavailableMovies() {
         return movieRepository.findByAvailabilityIsFalse();
+    }
+
+    private void validateMovieCode(String code) throws BusinessException {
+        if (code == null || !code.matches("[A-Z]{3}-\\d{3}(?!000)")) {
+            throw new BusinessException("Invalid movie code format. It should be three uppercase letters, a hyphen, and three digits (excluding 000 at the end).");
+        }
+
+        if (code.endsWith("000")) {
+            throw new BusinessException("Invalid movie code. It cannot end with 000.");
+        }
     }
 }

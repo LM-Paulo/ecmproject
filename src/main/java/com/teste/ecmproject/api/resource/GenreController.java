@@ -1,6 +1,7 @@
 package com.teste.ecmproject.api.resource;
 
 import com.teste.ecmproject.api.dto.GenreDto;
+import com.teste.ecmproject.api.exception.BusinessException;
 import com.teste.ecmproject.model.entity.GenreEntity;
 import com.teste.ecmproject.service.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +23,17 @@ public class GenreController {
     }
 
     @PostMapping
-    public void createGenre(@RequestBody GenreDto genreDto) {
+    public void createGenre(@RequestBody GenreDto genreDto) throws BusinessException {
         genreService.createGenre(genreDto);
     }
 
     @PutMapping("/{id}")
-    public void updateGenre(@PathVariable UUID id, @RequestParam String genreName, @RequestParam Object newValue) {
+    public void updateGenre(@PathVariable UUID id, @RequestParam String genreName, @RequestParam Object newValue) throws BusinessException {
         genreService.update(id, genreName, newValue);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteGenre(@PathVariable UUID id) {
+    public void deleteGenre(@PathVariable UUID id) throws BusinessException {
         genreService.delete(id);
     }
 

@@ -1,6 +1,7 @@
 package com.teste.ecmproject.service.impl;
 
 import com.teste.ecmproject.api.dto.GenreDto;
+import com.teste.ecmproject.api.exception.BusinessException;
 import com.teste.ecmproject.model.entity.GenreEntity;
 import com.teste.ecmproject.model.repository.GenreRepository;
 import com.teste.ecmproject.model.repository.MovieRepository;
@@ -26,26 +27,29 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
-    public void createGenre(GenreDto dto) {
+    public void createGenre(GenreDto dto) throws BusinessException {
+        if (genreRepository.existsByName(dto.getName())){
+            throw new BusinessException("Genre with name '" + dto.getName() + "' already exists.");
+        }
         GenreEntity genre = new GenreEntity();
         genre.SetEntity(dto);
         genreRepository.save(genre);
-
     }
 
     @Override
-    public void update(UUID id, String genreName, Object newValue) {
-        GenreEntity entity = this.genreRepository.findById(id).orElseThrow(() -> new NoResultException("Entity not found with ID: " + id));
+    public void update(UUID id, String genreName, Object newValue) throws BusinessException {
+        GenreEntity entity = this.genreRepository.findById(id).orElseThrow(() -> new BusinessException("Genre with ID '" + id + "' not found."));
         BeanUtils.copyProperties(newValue,entity,genreName);
         this.genreRepository.save(entity);
     }
 
     @Override
-    public void delete(UUID id) {
+    public void delete(UUID id) throws BusinessException {
         if (id == null){
-            throw new IllegalArgumentException("Genre id cant be null.");
+            throw new BusinessException("Genre id cannot be null.");
         }
-        this.genreRepository.deleteById(id);
+        GenreEntity genre = genreRepository.findById(id).orElseThrow(() -> new BusinessException("Genre with ID '" + id + "' not found."));
+        this.genreRepository.deleteById(genre.getId());
 
     }
 

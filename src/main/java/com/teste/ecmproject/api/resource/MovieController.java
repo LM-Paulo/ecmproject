@@ -1,6 +1,7 @@
 package com.teste.ecmproject.api.resource;
 
 import com.teste.ecmproject.api.dto.MovieDto;
+import com.teste.ecmproject.api.exception.BusinessException;
 import com.teste.ecmproject.model.entity.MovieEntity;
 import com.teste.ecmproject.service.impl.MovieServiceImpl;
 import jakarta.transaction.Transactional;
@@ -23,19 +24,19 @@ public class MovieController {
         this.movieService = movieService;
     }
     @PostMapping("/create")
-    public ResponseEntity<?> createMovie(@RequestBody MovieDto dto){
+    public ResponseEntity<?> createMovie(@RequestBody MovieDto dto) throws BusinessException {
         movieService.createMovie(dto);
         return ResponseEntity.ok("Successfully created movie");
     }
 
     @PutMapping
     @Transactional
-    public void updateMovie(@RequestBody MovieDto dto){
+    public void updateMovie(@RequestBody MovieDto dto) throws BusinessException {
         movieService.update(dto);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMovie(@PathVariable UUID id) {
+    public void deleteMovie(@PathVariable UUID id) throws BusinessException {
         movieService.delete(id);
     }
 
