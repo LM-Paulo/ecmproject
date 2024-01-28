@@ -26,5 +26,5 @@ public class MovieDto {
 
     private Integer duration;
 
-    private boolean  Availability;
+    private boolean  availability;
 }

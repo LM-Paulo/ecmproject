@@ -72,7 +72,7 @@ public class MovieEntity implements Persistable<UUID> {
 
     @NotNull
     @NotBlank(message = "This field is required!")
-    private boolean  Availability;
+    private boolean  availability;
 
 
     public void setEntity(MovieDto dto){
@@ -82,7 +82,7 @@ public class MovieEntity implements Persistable<UUID> {
         this.yearLaunch = dto.getYearLaunch();
         this.parentalRating = dto.getParentalRating();
         this.duration = dto.getDuration();
-        this.Availability = dto.isAvailability();
+        this.availability = dto.isAvailability();
         this.genres = dto.getGenres();
 
 
