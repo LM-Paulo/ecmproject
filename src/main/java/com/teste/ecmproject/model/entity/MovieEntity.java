@@ -45,7 +45,7 @@ public class MovieEntity implements Persistable<UUID> {
 
     @ManyToMany
     @JoinTable(
-            name = "tbl_genre",
+            name = "tbl_movie_genre",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
