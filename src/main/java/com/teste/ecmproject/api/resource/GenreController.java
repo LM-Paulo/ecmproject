@@ -4,12 +4,13 @@ import com.teste.ecmproject.api.dto.GenreDto;
 import com.teste.ecmproject.api.exception.BusinessException;
 import com.teste.ecmproject.model.entity.GenreEntity;
 import com.teste.ecmproject.service.GenreService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/genres")
@@ -22,22 +23,26 @@ public class GenreController {
         this.genreService = genreService;
     }
 
-    @PostMapping
-    public void createGenre(@RequestBody GenreDto genreDto) throws BusinessException {
+    @PostMapping("/createGenre")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> createGenre(@RequestBody @Valid GenreDto genreDto) throws BusinessException {
         genreService.createGenre(genreDto);
+        return ResponseEntity.ok("Successfully created genre");
     }
 
-    @PutMapping("/{id}")
-    public void updateGenre(@PathVariable UUID id, @RequestParam String genreName, @RequestParam Object newValue) throws BusinessException {
-        genreService.update(id, genreName, newValue);
+    @PutMapping("/updateById/{id}")
+    public ResponseEntity<?> updateGenre(@PathVariable String id,@RequestBody @Valid GenreDto dto) throws BusinessException {
+        genreService.update(id,dto);
+        return ResponseEntity.ok("Genre updated successfully");
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteGenre(@PathVariable UUID id) throws BusinessException {
+    @DeleteMapping("/deleteById/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteGenre(@PathVariable String id) throws BusinessException {
         genreService.delete(id);
     }
 
-    @GetMapping
+    @GetMapping("/listAll")
     public Page<GenreEntity> listAllGenres(
             @RequestParam(value = "direction", defaultValue = "ASC") String direction,
             @RequestParam(value = "properties", defaultValue = "name") String properties,

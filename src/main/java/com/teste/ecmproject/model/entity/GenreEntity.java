@@ -7,9 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.GenericGenerator;
-
-import java.util.UUID;
+import org.hibernate.annotations.UuidGenerator;
+import org.springframework.data.domain.Persistable;
 
 @Entity
 @Data
@@ -17,13 +16,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @DynamicUpdate
 @Table(name = "tbl_genre")
-public class GenreEntity {
+public class GenreEntity implements Persistable<String> {
 
     @Id
-    @GeneratedValue(generator = "UUIDGenerator")
-    @GenericGenerator(name = "UUIDGenerator", strategy = "uuid2")
-    @Column(name = "genre_id", unique = true, updatable = false, nullable = false)
-    private UUID id;
+    @UuidGenerator
+    private String id;
 
     @Column(unique = true)
     @NotBlank
@@ -32,4 +29,14 @@ public class GenreEntity {
      public void SetEntity(GenreDto dto){
          this.name = dto.getName();
      }
+
+    @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
+    public boolean isNew() {
+        return id == null;
+    }
 }

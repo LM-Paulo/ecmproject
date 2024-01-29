@@ -6,15 +6,13 @@ import com.teste.ecmproject.model.entity.GenreEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-import java.util.UUID;
-
 public interface GenreService {
 
     void createGenre(GenreDto dto) throws BusinessException;
 
-    void update(UUID id, String genreName, Object newValue) throws BusinessException;
+    void update(String id,GenreDto dto) throws BusinessException;
 
-    void delete(UUID id) throws BusinessException;
+    void delete(String id) throws BusinessException;
 
     Page<GenreEntity> listAllGenre(Sort.Direction direction, String properties, Integer page, Integer size);
 }
