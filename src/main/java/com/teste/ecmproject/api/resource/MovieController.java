@@ -5,14 +5,16 @@ import com.teste.ecmproject.api.exception.BusinessException;
 import com.teste.ecmproject.model.entity.MovieEntity;
 import com.teste.ecmproject.service.impl.MovieServiceImpl;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
+
 
 @RestController
 @RequestMapping("api/movie")
@@ -24,29 +26,31 @@ public class MovieController {
         this.movieService = movieService;
     }
     @PostMapping("/create")
-    public ResponseEntity<?> createMovie(@RequestBody MovieDto dto) throws BusinessException {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> createMovie(@RequestBody @Valid MovieDto dto) throws BusinessException {
         movieService.createMovie(dto);
         return ResponseEntity.ok("Successfully created movie");
     }
 
     @PutMapping
     @Transactional
-    public void updateMovie(@RequestBody MovieDto dto) throws BusinessException {
-        movieService.update(dto);
+    public ResponseEntity<?> updateMovie(@PathVariable String id,@RequestBody @Valid MovieDto dto) throws BusinessException {
+        movieService.update(id,dto);
+        return ResponseEntity.ok("Successfully created movie");
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMovie(@PathVariable UUID id) throws BusinessException {
+    public void deleteMovie(@PathVariable String id) throws BusinessException {
         movieService.delete(id);
     }
 
     @GetMapping("/search")
-    public List<MovieEntity> findMoviesByName(@RequestParam("name") String name) {
+    public List<MovieEntity> findMoviesByName(@RequestParam("name") String name) throws BusinessException {
         return movieService.findMoviesByName(name);
     }
 
     @GetMapping("/searchByGenre")
-    public List<MovieEntity> findMoviesByGenre(@RequestParam("genre") String genre) {
+    public List<MovieEntity> findMoviesByGenre(@RequestParam("genre") String genre) throws BusinessException {
         return movieService.findMovieByGenre(genre);
     }
 

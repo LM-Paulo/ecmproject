@@ -7,26 +7,23 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.data.domain.Persistable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tbl_movies")
-public class MovieEntity implements Persistable<UUID> {
+public class MovieEntity implements Persistable<String> {
 
     @Id
-    @GenericGenerator(name = "UUIDGenerator", strategy = "uuid2")
-    @GeneratedValue(generator = "UUIDGerator")
-    @Column(name = "id_movie", unique = true)
-    private UUID id;
+    @UuidGenerator
+    private String id;
 
     @Column(unique = true)
     @NotNull
@@ -70,8 +67,7 @@ public class MovieEntity implements Persistable<UUID> {
     @NotBlank(message = "This field is required!")
     private Integer duration;
 
-    @NotNull
-    @NotBlank(message = "This field is required!")
+
     private boolean  availability;
 
 
@@ -89,7 +85,7 @@ public class MovieEntity implements Persistable<UUID> {
     }
 
     @Override
-    public UUID getId() {
+    public String getId() {
         return id;
     }
 

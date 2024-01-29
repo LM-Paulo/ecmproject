@@ -2,6 +2,7 @@ package com.teste.ecmproject.service.impl;
 
 import com.teste.ecmproject.api.dto.MovieDto;
 import com.teste.ecmproject.api.exception.BusinessException;
+import com.teste.ecmproject.model.entity.GenreEntity;
 import com.teste.ecmproject.model.entity.MovieEntity;
 import com.teste.ecmproject.model.repository.MovieRepository;
 import com.teste.ecmproject.service.MovieService;
@@ -12,9 +13,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
+
 @Service
 public class MovieServiceImpl implements MovieService {
 
@@ -28,44 +29,59 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public void createMovie(MovieDto dto) throws BusinessException {
-        validateMovieCode(dto.getCode());
         MovieEntity movieEntity = new MovieEntity();
         movieEntity.setEntity(dto);
+        validateMovieCode(dto.getCode());
         movieRepository.save(movieEntity);
 
     }
 
     @Override
     @Transactional
-    public void update(MovieDto dto) throws BusinessException {
+    public void update(String id,MovieDto dto) throws BusinessException {
+        Optional<MovieEntity> entity = movieRepository.findById(id);
         validateMovieCode(dto.getCode());
-        movieRepository.updateMovie(
-                dto.getCode(),
-                dto.getName(),
-                dto.getSynopsis(),
-                dto.getGenres(),
-                dto.getYearLaunch(),
-                dto.getParentalRating(),
-                dto.getDuration(),
-                dto.isAvailability());
-    }
 
-    @Override
-    public void delete(UUID id) throws BusinessException {
-        if (id == null){
-            throw new BusinessException("The movie id cannot be null.");
+        if (entity.isPresent()) {
+            MovieEntity movie = new MovieEntity();
+            movie.setEntity(dto);
+
+            movieRepository.updateMovie(
+                    id,
+                    dto.getCode(),
+                    dto.getName(),
+                    dto.getSynopsis(),
+                    dto.getGenres(),
+                    dto.getYearLaunch(),
+                    dto.getParentalRating(),
+                    dto.getDuration()
+            );
+        } else {
+            throw new BusinessException(id + " DOES NOT EXIST");
         }
-        this.movieRepository.deleteById(id);
+    }
+
+
+    @Override
+    public void delete(String id) throws BusinessException {
+        Optional<MovieEntity> genre = Optional.ofNullable(movieRepository.findById(id).orElseThrow(() -> new BusinessException("Genre with ID '" + id + "' not found.")));
+        this.movieRepository.deleteById(genre.get().getId());
 
     }
 
     @Override
-    public List<MovieEntity> findMoviesByName(String name) {
+    public List<MovieEntity> findMoviesByName(String name) throws BusinessException {
+        if (name == null){
+            throw new BusinessException( name + "DOES NOT EXIST");
+        }
         return movieRepository.findByAvailabilityIsTrueAndNameContainingIgnoreCase(name);
     }
 
     @Override
-    public List<MovieEntity> findMovieByGenre(String genre) {
+    public List<MovieEntity> findMovieByGenre(String genre) throws BusinessException {
+        if (genre == null){
+            throw new BusinessException( genre + "DOES NOT EXIST");
+        }
         return movieRepository.findByAvailabilityIsTrueAndGenresNameIgnoreCase(genre);
     }
 

@@ -13,10 +13,10 @@ import org.springframework.stereotype.Repository;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
+
 
 @Repository
-public interface MovieRepository  extends JpaRepository<MovieEntity, UUID> {
+public interface MovieRepository  extends JpaRepository<MovieEntity, String> {
 
     List<MovieEntity> findByAvailabilityIsTrueAndNameContainingIgnoreCase(String name);
 
@@ -27,18 +27,19 @@ public interface MovieRepository  extends JpaRepository<MovieEntity, UUID> {
     @Modifying
     @Transactional
     @Query("UPDATE MovieEntity m " +
-            "SET m.name = :name, m.synopsis = :synopsis, m.genres = :genres, " +
+            "SET m.code = :code,m.name = :name, m.synopsis = :synopsis, m.genres = :genres, " +
             "m.yearLaunch = :yearLaunch, m.parentalRating = :parentalRating, " +
-            "m.duration = :duration, m.availability = :availability " +
-            "WHERE m.code = :code")
+            "m.duration = :duration " +
+            "WHERE m.id = :id")
     void updateMovie(
+            @Param("id") String id,
             @Param("code") String code,
             @Param("name") String name,
             @Param("synopsis") String synopsis,
             @Param("genres") Set<GenreEntity> genres,
             @Param("yearLaunch") Date yearLaunch,
             @Param("parentalRating") String parentalRating,
-            @Param("duration") Integer duration,
-            @Param("availability") boolean availability
+            @Param("duration") Integer duration
     );
+
 }
